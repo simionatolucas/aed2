@@ -33,8 +33,43 @@ def quickselect(array, target):
         elif pivot > target:
             right = pivot - 1
 
+def order(array):
+    mid = quickselect(array, round(len(array)/2 - 1))
+    center_index = round(len(array)/2 - 1)
+    print(f"El elemento central es {mid}, que una vez ordenado, está en la posición {center_index}.")
+    print(f"Lista luego de realizar Quickselect: {array}")
+
+    count_smaller = 0 # cuántos elementos más pequeños tengo a la izquierda
+    for i in range(center_index):
+        if array[i] < array[center_index]:
+            count_smaller += 1
+
+    desired_left = round(count_smaller / 2) # cuántos elementos más pequeños quiero tener a la izquierda
+
+    print(f"Tenemos {count_smaller} elementos menores que {mid} en la parte izquierda, y queremos dejar solo {desired_left}.")
+
+    left = 0
+    right = center_index + 1
+
+    while count_smaller > desired_left:
+        while array[left] >= mid:  # buscar un elemento menor que el centro que esté a la izquierda
+            left += 1
+
+        while array[right] <= mid: # buscar un elemento mayor que el centro que esté a la derecha
+            right += 1
+
+        array[left], array[right] = array[right], array[left]
+
+        count_smaller -= 1
+
+        left += 1
+        right += 1
+
+    return(array)
+
 if __name__ == "__main__":
-    arr = [7,3,2,8,5,4,1,6,10,9]
-    # arr = [89,34,86,2,25,52,69,66,48,77,95,30,34,73,13,11,88,27,95,36]
-    print(sorted(arr))
-    print(quickselect(arr, round(len(arr)/2 - 1)))
+    #arr = [11,6,3,4,8,2,9,7,1,5,10,45,23]
+    arr = [89,48,2,25,52,69,66,86,77,95,30,34,73,13,11,88,27,97,33,71]
+    print(f"Lista original: {arr}")
+    print(f"Lista ordenada: {sorted(arr)}")
+    print(f"Lista final: {order(arr)}")

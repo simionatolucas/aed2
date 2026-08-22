@@ -1,4 +1,4 @@
-def contiene_suma_n2(A: list, n: int):
+def contiene_suma(A: list, n: int):
     for i in range(0, len(A)):
         for j in range(i, len(A)):
             if A[i] + A[j] == n:
@@ -7,4 +7,4 @@ def contiene_suma_n2(A: list, n: int):
     return False
 
 A = [3, 5, 1, 7, 2, 6, 10]
-contiene_suma_n2(A, 8)
+contiene_suma(A, 8)
