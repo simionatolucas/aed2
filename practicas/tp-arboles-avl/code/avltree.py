@@ -51,6 +51,22 @@ def rotateRight(tree, rotRoot):
     rotRoot.parent = newRoot
 
 
+#Ejercicio 2
+def calculateBalance(tree: AVLTree):
+    _balanceImpl(tree.root)
+
+def _balanceImpl(currentNode: AVLNode) -> int:
+    if currentNode == None:
+        return -1
+
+    leftH = _balanceImpl(currentNode.leftnode)
+    rightH = _balanceImpl(currentNode.rightnode)
+
+    currentNode.bf = leftH - rightH
+
+    return 1 + max(leftH, rightH) #max porque buscamos el camino más largo hacia abajo
+
+
 def access(tree: AVLTree, key: int):
     if tree.root.key == key:
         return tree.root
@@ -159,7 +175,9 @@ def traverseInPostOrder(AVL: AVLTree) -> LinkedList | None:
 
 def _inPostOrderImpl(currentNode: AVLNode, L: LinkedList):
     if currentNode:
-        add(L, currentNode.value)
+        data = [currentNode.value, currentNode.bf]
+
+        add(L, data)
         _inPostOrderImpl(currentNode.rightnode, L)
         _inPostOrderImpl(currentNode.leftnode, L)
 
@@ -171,6 +189,7 @@ def print_inPostOrder(tree):
         print(currentNode.value, end=" ")
         currentNode = currentNode.nextNode
     print("")
+
 
 tree = AVLTree()
 # insert(tree, "a", 4)
@@ -188,9 +207,16 @@ insert(tree, "b", 15)
 insert(tree, "a", 10)
 insert(tree, "f", 40)
 
+
+calculateBalance(tree)
+
+print(tree.root.bf)
+
 print_inPostOrder(tree)
 
 # print(access(tree, 30))
-rotateLeft(tree, access(tree, 25))
+rotateRight(tree, access(tree, 30))
 
+calculateBalance(tree)
+print(tree.root.bf)
 print_inPostOrder(tree)
