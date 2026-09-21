@@ -118,6 +118,27 @@ def _findPrefixImpl(currentNode: TrieNode, word: str, n: int):
         current  = current.nextNode
 
 
+#Ejercicio 5
+def compareTrie(T1: Trie, T2: Trie) -> bool:
+    words = []
+    _compareTrieImpl(T1.root, "", words)
+
+    for word in words:
+        if not search(T2, word):
+            return False
+
+    return True
+
+def _compareTrieImpl(node, currentWord, words):
+    if node.isEndOfWord:
+        words.append(currentWord)
+
+    i = node.children.head
+    while i:
+        _compareTrieImpl(i.value, currentWord + i.value.key, words)
+        i = i.nextNode
+
+
 if __name__ == "__main__":
     T = Trie()
 
@@ -140,3 +161,46 @@ if __name__ == "__main__":
 
     print("\nPalabras con prefijo 'per' y longitud 5:")
     findPrefix(T, "per", 5)
+
+
+    T1 = Trie()
+
+    insert(T1, "casa")
+    insert(T1, "caso")
+    insert(T1, "cama")
+    insert(T1, "camino")
+    insert(T1, "casamiento")
+    insert(T1, "perro")
+    insert(T1, "perla")
+
+    T2 = Trie()
+
+    insert(T2, "casa")
+    insert(T2, "caso")
+    insert(T2, "cama")
+    insert(T2, "camino")
+    insert(T2, "casamiento")
+    insert(T2, "perro")
+    insert(T2, "perla")
+
+    T3 = Trie()
+
+    insert(T3, "cama")
+    insert(T3, "casamiento")
+    insert(T3, "perro")
+    insert(T3, "camino")
+    insert(T3, "casa")
+    insert(T3, "perla")
+    insert(T3, "caso")
+
+    T4 = Trie()
+
+    insert(T3, "cama")
+    insert(T3, "casamiento")
+    insert(T3, "camino")
+    insert(T3, "perla")
+    insert(T3, "caso")
+
+    print(compareTrie(T1, T2))
+    print(compareTrie(T1, T3))
+    print(compareTrie(T1, T4))
