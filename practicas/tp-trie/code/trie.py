@@ -1,17 +1,19 @@
 from linkedlist import LinkedList, add as LLadd, getNodeValue as LLgetNode, delete as LLdelete
 
 class Trie:
-    root = None
+    def __init__(self):
+        self.root = TrieNode()
 
 class TrieNode:
-    parent = None
-    children = LinkedList()
-    key = None
-    isEndOfWord = False
+    def __init__(self):
+        self.parent = None
+        self.children = LinkedList()
+        self.key = None
+        self.isEndOfWord = False
 
 
 #Ejercicio 1
-def insert(T: Trie, element):
+def insert(T: Trie, element: str):
     currentNode = T.root
 
     for i in element:
@@ -32,7 +34,7 @@ def insert(T: Trie, element):
     return
 
 
-def search(T: Trie, element) -> bool:
+def search(T: Trie, element: str) -> bool:
     currentNode = T.root
 
     for i in element:
@@ -47,7 +49,7 @@ def search(T: Trie, element) -> bool:
 
 
 #Ejercicio 3
-def delete(T: Trie, element) -> bool:
+def delete(T: Trie, element: str) -> bool:
     currentNode = T.root
 
     for i in element:
@@ -65,7 +67,7 @@ def delete(T: Trie, element) -> bool:
 
     if currentNode.children.head is not None: # Si el nodo tiene hijos no podemos eliminarlo.
         return True
-    
+
     while currentNode != T.root:
         parent = currentNode.parent
 
@@ -81,16 +83,60 @@ def delete(T: Trie, element) -> bool:
             break
 
     return True
-            
-trie = Trie()
-trie.root = TrieNode()
-insert(trie, "casa")
 
-print(search(trie, "casa"))
 
-insert(trie, "casamiento")
+#Ejercicio 4
+def findPrefix(T: Trie, p: str, n: int):
+    currentNode = T.root
+    if len(p) > n:
+        print("El prefijo debe ser más corto que la longitud de la palabra.")
+        return False
 
-print(delete(trie, "casamiento"))
+    for i in p:
+        node = LLgetNode(currentNode.children, i)
 
-print(search(trie, "casa"))
-print(search(trie, "casamiento"))
+        if node is None:
+            print("No existen palabras con ese prefijo.")
+            return False
+
+        currentNode = node
+
+    _findPrefixImpl(currentNode, p, n-len(p))
+
+
+def _findPrefixImpl(currentNode: TrieNode, word: str, n: int):
+    if n == 0:
+        if currentNode.isEndOfWord:
+            print(word)
+        return
+
+    current = currentNode.children.head
+
+    while current is not None:
+        j = current.value
+        _findPrefixImpl(j, word + j.key, n-1)
+        current  = current.nextNode
+
+
+if __name__ == "__main__":
+    T = Trie()
+
+    insert(T, "casa")
+    insert(T, "caso")
+    insert(T, "cama")
+    insert(T, "camino")
+    insert(T, "casamiento")
+    insert(T, "perro")
+    insert(T, "perla")
+
+    print("Palabras con prefijo 'ca' y longitud 4:")
+    findPrefix(T, "ca", 4)
+
+    print("\nPalabras con prefijo 'ca' y longitud 5:")
+    findPrefix(T, "ca", 5)
+
+    print("\nPalabras con prefijo 'cas' y longitud 4:")
+    findPrefix(T, "cas", 4)
+
+    print("\nPalabras con prefijo 'per' y longitud 5:")
+    findPrefix(T, "per", 5)
