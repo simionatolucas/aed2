@@ -1,4 +1,4 @@
-from linkedlist import LinkedList, add as LLadd, getNodeValue as LLgetNode, delete as LLdelete
+from linkedlist import LinkedList, add as LLadd, getNodeValue as LLgetNode, delete as LLdelete, length
 
 class Trie:
     def __init__(self):
@@ -129,7 +129,7 @@ def compareTrie(T1: Trie, T2: Trie) -> bool:
 
     return True
 
-def _compareTrieImpl(node, currentWord, words):
+def _compareTrieImpl(node: TrieNode, currentWord, words: list):
     if node.isEndOfWord:
         words.append(currentWord)
 
@@ -139,68 +139,137 @@ def _compareTrieImpl(node, currentWord, words):
         i = i.nextNode
 
 
+#Ejercicio 6
+def inverted(T: Trie) -> bool:
+    word = ""
+    return _invertedImpl(T, T.root, word)
+
+def _invertedImpl(T: Trie, node: TrieNode, word: str):
+    if node.isEndOfWord:
+        if LLgetNode(T.root.children, node.key):
+            if search(T, word[::-1]):
+                return True
+    
+    i = node.children.head
+    while i:
+        if _invertedImpl(T, i.value, word + i.value.key):
+            return True
+        i = i.nextNode
+
+    return False
+
+
+#Ejercicio 7
+def autoComplete(T: Trie, s: str):
+    currentNode = T.root
+
+    for i in s:
+        node = LLgetNode(currentNode.children, i)
+
+        if node is None:
+            return None
+
+        currentNode = node
+
+    match = ""
+    return _autoCompleteImpl(T, currentNode, match)
+    
+def _autoCompleteImpl(T: Trie, node: TrieNode, match: str):
+    nextNode = node.children.head
+    
+    if length(node.children) > 1 or nextNode is None:
+        return match
+        
+    return _autoCompleteImpl(T, nextNode.value, match + nextNode.value.key)
+
 if __name__ == "__main__":
+    # T = Trie()
+
+    # insert(T, "casa")
+    # insert(T, "caso")
+    # insert(T, "cama")
+    # insert(T, "camino")
+    # insert(T, "casamiento")
+    # insert(T, "perro")
+    # insert(T, "perla")
+
+    # print("Palabras con prefijo 'ca' y longitud 4:")
+    # findPrefix(T, "ca", 4)
+
+    # print("\nPalabras con prefijo 'ca' y longitud 5:")
+    # findPrefix(T, "ca", 5)
+
+    # print("\nPalabras con prefijo 'cas' y longitud 4:")
+    # findPrefix(T, "cas", 4)
+
+    # print("\nPalabras con prefijo 'per' y longitud 5:")
+    # findPrefix(T, "per", 5)
+
+
+    # T1 = Trie()
+
+    # insert(T1, "casa")
+    # insert(T1, "caso")
+    # insert(T1, "cama")
+    # insert(T1, "camino")
+    # insert(T1, "casamiento")
+    # insert(T1, "perro")
+    # insert(T1, "perla")
+
+    # T2 = Trie()
+
+    # insert(T2, "casa")
+    # insert(T2, "caso")
+    # insert(T2, "cama")
+    # insert(T2, "camino")
+    # insert(T2, "casamiento")
+    # insert(T2, "perro")
+    # insert(T2, "perla")
+
+    # T3 = Trie()
+
+    # insert(T3, "cama")
+    # insert(T3, "casamiento")
+    # insert(T3, "perro")
+    # insert(T3, "camino")
+    # insert(T3, "casa")
+    # insert(T3, "perla")
+    # insert(T3, "caso")
+
+    # T4 = Trie()
+
+    # insert(T3, "cama")
+    # insert(T3, "casamiento")
+    # insert(T3, "camino")
+    # insert(T3, "perla")
+    # insert(T3, "caso")
+
+    # print(compareTrie(T1, T2))
+    # print(compareTrie(T1, T3))
+    # print(compareTrie(T1, T4))
+
+    # T = Trie()
+    # insert(T, "casa")
+    # insert(T, "caso")
+    # insert(T, "asintotico")
+    # insert(T, "asac")
+    # insert(T, "tomate")
+
+    # T2 = Trie()
+    # insert(T2, "casa")
+    # insert(T2, "asad")
+    # insert(T2, "tomate")
+
+    # print(inverted(T))
+    # print(inverted(T2))
+
     T = Trie()
-
-    insert(T, "casa")
-    insert(T, "caso")
-    insert(T, "cama")
-    insert(T, "camino")
-    insert(T, "casamiento")
-    insert(T, "perro")
-    insert(T, "perla")
-
-    print("Palabras con prefijo 'ca' y longitud 4:")
-    findPrefix(T, "ca", 4)
-
-    print("\nPalabras con prefijo 'ca' y longitud 5:")
-    findPrefix(T, "ca", 5)
-
-    print("\nPalabras con prefijo 'cas' y longitud 4:")
-    findPrefix(T, "cas", 4)
-
-    print("\nPalabras con prefijo 'per' y longitud 5:")
-    findPrefix(T, "per", 5)
-
-
-    T1 = Trie()
-
-    insert(T1, "casa")
-    insert(T1, "caso")
-    insert(T1, "cama")
-    insert(T1, "camino")
-    insert(T1, "casamiento")
-    insert(T1, "perro")
-    insert(T1, "perla")
+    insert(T, "madera")
+    insert(T, "mama")
 
     T2 = Trie()
+    insert(T2, "groenlandia")
+    insert(T2, "groenlandes")
 
-    insert(T2, "casa")
-    insert(T2, "caso")
-    insert(T2, "cama")
-    insert(T2, "camino")
-    insert(T2, "casamiento")
-    insert(T2, "perro")
-    insert(T2, "perla")
-
-    T3 = Trie()
-
-    insert(T3, "cama")
-    insert(T3, "casamiento")
-    insert(T3, "perro")
-    insert(T3, "camino")
-    insert(T3, "casa")
-    insert(T3, "perla")
-    insert(T3, "caso")
-
-    T4 = Trie()
-
-    insert(T3, "cama")
-    insert(T3, "casamiento")
-    insert(T3, "camino")
-    insert(T3, "perla")
-    insert(T3, "caso")
-
-    print(compareTrie(T1, T2))
-    print(compareTrie(T1, T3))
-    print(compareTrie(T1, T4))
+    print("t1", autoComplete(T, "ma"))
+    print("t2", autoComplete(T2, "groen"))
