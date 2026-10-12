@@ -1,4 +1,4 @@
-from linkedlist import *
+from linkedlist import LinkedList, add
 
 class AVLTree: 
     root = None 
@@ -107,17 +107,17 @@ def reBalanceSubTree(tree: AVLTree, node: AVLNode):
 
 
 #Ejercicio 4
-def insert(AVL: AVLTree, element, key: int) -> int | None:
+def insert(tree: AVLTree, element, key: int) -> int | None:
     newNode = AVLNode()
     newNode.value = element
     newNode.key = key
 
-    if AVL.root is None:
-        AVL.root = newNode
+    if tree.root is None:
+        tree.root = newNode
         return newNode.key
     else:
-        new_key = _insertImpl(newNode, AVL.root)
-        reBalance(AVL)
+        new_key = _insertImpl(newNode, tree.root)
+        reBalance(tree)
 
         return new_key
 
@@ -136,6 +136,65 @@ def _insertImpl(newNode: AVLNode, currentNode: AVLNode) -> int:
             return _insertImpl(newNode, currentNode.leftnode)
 
     return newNode.key
+
+
+#Ejercicio 5
+def delete(tree: AVLTree, key: int) -> int | None:
+    if tree.root is None:
+        return None
+
+    deleted_key = _deleteImpl(tree, tree.root, key)
+
+    if deleted_key is not None:
+        reBalance(tree)
+    
+    return deleted_key
+
+def _deleteImpl(tree: AVLTree, currentNode: AVLNode, key: int) -> int | None:
+    if currentNode is None:
+        return None
+
+    if currentNode.key == key:
+        # si el nodo es una hoja o tiene un solo hijo
+        if currentNode.leftnode is None or currentNode.rightnode is None:
+            if currentNode.leftnode is not None:
+                child = currentNode.leftnode
+            else: 
+                child = currentNode.rightnode
+
+            if currentNode.parent is None: # si el nodo es la raíz
+                tree.root = child
+                if child is not None: 
+                    child.parent = None
+            else: 
+                if currentNode.parent.leftnode == currentNode:
+                    currentNode.parent.leftnode = child
+                else: 
+                    currentNode.parent.rightnode = child
+                    
+                if child is not None:
+                    child.parent = currentNode.parent
+
+        # nodo con dos hijos
+        else:
+            child = min_node(currentNode.rightnode)
+            
+            currentNode.key = child.key
+            currentNode.value = child.value
+            
+            _deleteImpl(tree, currentNode.rightnode, child.key)
+        
+        return key
+        
+    elif key > currentNode.key:
+        _deleteImpl(tree, currentNode.rightnode, key)
+    else:
+        _deleteImpl(tree, currentNode.leftnode, key)
+
+def min_node(node: AVLNode) -> AVLNode:
+    while node.leftnode is not None:
+        node = node.leftnode
+    return node
 
 
 def access(tree: AVLTree, key: int):
@@ -182,32 +241,6 @@ def _searchImpl(currentNode: AVLNode, element):
     return looked_right
 
 
-def traverseInOrder(AVL: AVLTree) -> LinkedList | None:
-    if AVL.root is None:
-        return None
-    
-    L = LinkedList()
-    _inOrderImpl(AVL.root, L)
-    return L
-
-def _inOrderImpl(currentNode: AVLNode, L: LinkedList):
-    if currentNode:
-        _inOrderImpl(currentNode.rightnode, L)
-
-        add(L, currentNode.value)
-
-        _inOrderImpl(currentNode.leftnode, L)
-
-def print_inOrder(tree):
-    linkedTree = traverseInOrder(tree)
-    currentNode = linkedTree.head
-
-    while currentNode:
-        print(currentNode.value, end=" ")
-        currentNode = currentNode.nextNode
-    print("")
-
-
 def traverseInPostOrder(AVL: AVLTree) -> LinkedList | None:
     if AVL.root is None:
         return None
@@ -234,33 +267,22 @@ def print_inPostOrder(tree):
     print("")
 
 
-tree = AVLTree()
-# insert(tree, "a", 4)
-# insert(tree, "b", 2)
-# insert(tree, "c", 6)
-# insert(tree, "d", 1)
-# insert(tree, "e", 3)
-# insert(tree, "f", 5)
-# insert(tree, "g", 7)
+if __name__ == "__main__":
+    tree = AVLTree()
 
-insert(tree, "e", 30)
-insert(tree, "c", 25)
-insert(tree, "d", 28)
-insert(tree, "b", 15)
-insert(tree, "a", 10)
-insert(tree, "f", 40)
+    insert(tree, "e", 30)
+    insert(tree, "c", 25)
+    insert(tree, "d", 28)
+    insert(tree, "b", 15)
+    insert(tree, "a", 10)
+    insert(tree, "f", 40)
 
+    calculateBalance(tree)
+    print_inPostOrder(tree)
 
-calculateBalance(tree)
-print_inPostOrder(tree)
+    insert(tree, "j", 12)
+    insert(tree, "k", 13)
+    print_inPostOrder(tree)
 
-insert(tree, "j", 12)
-print_inPostOrder(tree)
-
-insert(tree, "k", 13)
-print_inPostOrder(tree)
-
-# rotateRight(tree, access(tree, 30))
-
-# calculateBalance(tree)
-# print_inPostOrder(tree)
+    delete(tree, 30)
+    print_inPostOrder(tree)
