@@ -31,6 +31,8 @@ def rotateLeft(tree, rotRoot):
     newRoot.leftnode = rotRoot
     rotRoot.parent = newRoot
 
+    return newRoot
+
 def rotateRight(tree, rotRoot):
     newRoot = rotRoot.leftnode
     rotRoot.leftnode = newRoot.rightnode
@@ -50,13 +52,17 @@ def rotateRight(tree, rotRoot):
     newRoot.rightnode = rotRoot
     rotRoot.parent = newRoot
 
+    return newRoot
+
 
 #Ejercicio 2
 def calculateBalance(tree: AVLTree):
     _balanceImpl(tree.root)
 
+    return tree
+
 def _balanceImpl(currentNode: AVLNode) -> int:
-    if currentNode == None:
+    if currentNode is None:
         return -1
 
     leftH = _balanceImpl(currentNode.leftnode)
@@ -65,6 +71,71 @@ def _balanceImpl(currentNode: AVLNode) -> int:
     currentNode.bf = leftH - rightH
 
     return 1 + max(leftH, rightH) #max porque buscamos el camino más largo hacia abajo
+
+
+#Ejercicio 3
+def reBalance(tree: AVLTree):
+    calculateBalance(tree)
+    
+    if tree.root is not None:
+        reBalanceSubTree(tree, tree.root)
+        
+    return tree
+
+def reBalanceSubTree(tree: AVLTree, node: AVLNode):
+    if node is None:
+        return
+        
+    reBalanceSubTree(tree, node.leftnode)
+    reBalanceSubTree(tree, node.rightnode)
+    
+    if node.bf > 1: 
+        # rotación doble izquierda derecha
+        if node.leftnode and node.leftnode.bf < 0:
+            rotateLeft(tree, node.leftnode)
+        
+        new_root = rotateRight(tree, node)
+        _balanceImpl(new_root)
+        
+    elif node.bf < -1: 
+        # rotación doble derecha izquierda
+        if node.rightnode and node.rightnode.bf > 0:
+            rotateRight(tree, node.rightnode)
+
+        new_root = rotateLeft(tree, node)
+        _balanceImpl(new_root)
+
+
+#Ejercicio 4
+def insert(AVL: AVLTree, element, key: int) -> int | None:
+    newNode = AVLNode()
+    newNode.value = element
+    newNode.key = key
+
+    if AVL.root is None:
+        AVL.root = newNode
+        return newNode.key
+    else:
+        new_key = _insertImpl(newNode, AVL.root)
+        reBalance(AVL)
+
+        return new_key
+
+def _insertImpl(newNode: AVLNode, currentNode: AVLNode) -> int:
+    if newNode.key > currentNode.key:
+        if currentNode.rightnode is None:
+            currentNode.rightnode = newNode
+            newNode.parent = currentNode
+        else:
+            return _insertImpl(newNode, currentNode.rightnode)
+    else:
+        if currentNode.leftnode is None:
+            currentNode.leftnode = newNode
+            newNode.parent = currentNode
+        else:
+            return _insertImpl(newNode, currentNode.leftnode)
+
+    return newNode.key
 
 
 def access(tree: AVLTree, key: int):
@@ -109,34 +180,6 @@ def _searchImpl(currentNode: AVLNode, element):
     
     looked_right = _searchImpl(currentNode.rightnode, element)
     return looked_right
-
-
-def insert(AVL: AVLTree, element, key: int) -> int | None:
-    newNode = AVLNode()
-    newNode.value = element
-    newNode.key = key
-
-    if AVL.root is None:
-        AVL.root = newNode
-        return newNode.key
-    else:
-        return _insertImpl(newNode, AVL.root)
-
-def _insertImpl(newNode: AVLNode, currentNode: AVLNode) -> int:
-    if newNode.key > currentNode.key:
-        if currentNode.rightnode is None:
-            currentNode.rightnode = newNode
-            newNode.parent = currentNode
-        else:
-            return _insertImpl(newNode, currentNode.rightnode)
-    else:
-        if currentNode.leftnode is None:
-            currentNode.leftnode = newNode
-            newNode.parent = currentNode
-        else:
-            return _insertImpl(newNode, currentNode.leftnode)
-
-    return newNode.key
 
 
 def traverseInOrder(AVL: AVLTree) -> LinkedList | None:
@@ -209,14 +252,15 @@ insert(tree, "f", 40)
 
 
 calculateBalance(tree)
-
-print(tree.root.bf)
-
 print_inPostOrder(tree)
 
-# print(access(tree, 30))
-rotateRight(tree, access(tree, 30))
-
-calculateBalance(tree)
-print(tree.root.bf)
+insert(tree, "j", 12)
 print_inPostOrder(tree)
+
+insert(tree, "k", 13)
+print_inPostOrder(tree)
+
+# rotateRight(tree, access(tree, 30))
+
+# calculateBalance(tree)
+# print_inPostOrder(tree)
